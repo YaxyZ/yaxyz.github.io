@@ -5,6 +5,9 @@ theme: ["PaperMod"]
 
 defaultTheme: dark
 paginate: 5
+caches:
+  images:
+    dir: :cacheDir/images
 params:
     disableThemeToggle: true
     disableAnchoredHeadings: true
