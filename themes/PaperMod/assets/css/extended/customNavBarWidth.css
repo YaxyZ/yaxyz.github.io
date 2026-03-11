@@ -1,0 +1,59 @@
+/* 1. Header Wrapper */
+.header {
+    width: 75% !important;
+    max-width: 75% !important;
+    background: var(--theme);
+    position: relative;
+    z-index: 100;
+}
+
+/* 2. Navigation Container - Fix for Overlap */
+.nav {
+    max-width: 100% !important;
+    margin: 0 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Allows menu to drop below logo instead of overlapping */
+    padding: 15px 40px; /* Use padding for height instead of a fixed px height */
+    min-height: 60px;
+}
+
+/* 3. Logo Fix */
+.logo {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+}
+
+/* 4. Menu Fix */
+#menu {
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 10px 0;
+    list-style: none;
+}
+
+/* 5. Content Spacing - Prevents 'Posts' from hiding behind header */
+.main {
+    margin-top: 20px; /* Adds breathing room between header and content */
+}
+
+/* 6. Mobile specific adjustment */
+@media (max-width: 768px) {
+    .nav {
+        justify-content: center; /* Centers items when they stack */
+        flex-direction: column; /* Forces Logo on top, Menu on bottom */
+        padding: 10px 20px;
+    }
+    
+    #menu {
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .header-title {
+        margin-top: 2rem; /* Extra space for the 'Posts' title on small screens */
+    }
+}

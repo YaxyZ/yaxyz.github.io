@@ -1,0 +1,36 @@
+/* Top Menu Styling - Clean & Borderless */
+
+/* Add smooth spacing between items since borders are gone */
+#menu {
+    gap: 24px; 
+}
+
+/* Strip all borders and backgrounds from the anchor tag */
+#menu a {
+    padding: 0; /* Removing padding keeps the header vertically compact */
+    border: none;
+    background: transparent !important;
+    color: var(--secondary); /* Muted steel-blue for inactive links */
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+/* Control PaperMod's internal span for a clean underline effect */
+#menu a span {
+    display: inline-block;
+    padding-bottom: 1px; /* Space between text and the underline */
+    box-shadow: none !important;
+    background: none !important;
+    border-bottom: 2px solid transparent; /* Invisible baseline to prevent layout jumping */
+    transition: all 0.3s ease;
+}
+
+/* Hover and Active states - Brighten and underline */
+#menu a:hover span,
+#menu a.active span {
+    color: var(--primary); /* Shift to sharp ice-white */
+    border-bottom-color: var(--primary); /* Reveal the underline */
+    text-shadow: 0 0 12px rgba(230, 235, 245, 0.35); /* Subtle cyber-glow on the text */
+}

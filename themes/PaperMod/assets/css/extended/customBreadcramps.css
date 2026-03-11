@@ -1,0 +1,43 @@
+/* --- Professional Breadcrumbs Logic --- */
+.breadcrumbs {
+    padding: 0;
+    margin: 20px 0 10px 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-family: monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--tertiary);
+}
+
+/* Style for the clickable parent links (Home, Posts) */
+.breadcrumbs a {
+    color: var(--tertiary) !important;
+    transition: color 0.2s ease;
+}
+
+.breadcrumbs a:hover {
+    color: var(--primary) !important;
+}
+
+/* Style for the Current Article (The last item) */
+.breadcrumbs li:last-child {
+    color: var(--secondary); /* Slightly brighter than tertiary */
+    font-weight: 600;
+    pointer-events: none; /* Can't click the page you are already on */
+    max-width: 300px; /* Prevents long titles from taking over the screen */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds ... if the title is too long */
+}
+
+/* Custom Separator Style */
+.breadcrumbs li:not(:last-child)::after {
+    content: "/";
+    margin: 0 10px;
+    color: var(--border);
+    font-weight: normal;
+}

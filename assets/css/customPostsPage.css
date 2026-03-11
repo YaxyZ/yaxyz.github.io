@@ -1,0 +1,118 @@
+/* --- Global Header Shrink --- */
+.header-title {
+    font-size: 1.8rem !important; /* Smaller main header */
+    margin-bottom: 0.5rem;
+}
+
+.header-desc {
+    font-size: 0.9rem;
+    color: var(--secondary);
+    max-width: 600px;
+}
+
+/* --- Compact Stream Items --- */
+.stream-item {
+    position: relative;
+    padding: 1rem 0 !important; /* Tight vertical padding */
+    border-bottom: 1px solid var(--border) !important;
+    transition: background 0.15s ease;
+}
+
+.stream-item:hover {
+    background: rgba(255, 255, 255, 0.01) !important;
+}
+
+/* Post Title - Small & Sharp */
+.item-title {
+    font-size: 1.15rem !important; 
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.2rem;
+    pointer-events: none;
+}
+
+/* Description - Muted & Small */
+.item-desc {
+    color: var(--secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+    pointer-events: none;
+}
+
+/* --- Footer Row (Date + Tags) --- */
+.item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 5; /* Keep tags clickable */
+}
+
+.item-tags {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.item-tags li a {
+    font-family: monospace;
+    font-size: 0.7rem; /* Tiny tags */
+    color: var(--tertiary);
+    text-decoration: none;
+}
+
+.item-tags li a:hover {
+    color: var(--primary);
+}
+
+.item-date {
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: var(--tertiary);
+    text-transform: uppercase;
+}
+
+/* --- Clickable Overlay --- */
+.item-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.page-footer {
+    margin-top: 3rem;
+    padding-bottom: 5rem;
+}
+
+.pagination-nav {
+    display: flex;
+    justify-content: space-between; /* Pushes sides to the edges */
+    align-items: center;
+    width: 100%;
+    font-family: monospace;
+    letter-spacing: 2px;
+}
+
+.nav-side {
+    flex: 1; /* Gives equal weight to both sides */
+}
+
+.nav-side:last-child {
+    text-align: right; /* Aligns 'NEXT' to the far right */
+}
+
+/* Reusing your existing nav-link styling */
+.nav-link {
+    color: var(--secondary) !important;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary) !important;
+    text-shadow: 0 0 8px rgba(230, 235, 245, 0.4);
+}

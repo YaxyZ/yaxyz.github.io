@@ -1,0 +1,23 @@
+:root {
+    /* Main content area width */
+    --main-width: 900px; 
+    
+    /* Width for 'wide' elements like large images or code blocks */
+    --gap: 24px;
+    --content-gap: 40px;
+}
+
+/* Ensure the main container actually respects the new variable */
+.main {
+    max-width: var(--main-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--gap);
+}
+
+/* Adjusting the Header and Footer to match the new width */
+.header, .footer {
+    max-width: var(--main-width);
+    margin-left: auto;
+    margin-right: auto;
+}
