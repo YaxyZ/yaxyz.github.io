@@ -1,0 +1,33 @@
+baseURL: https://example.org/
+languageCode: en-us
+title: YaxyZ's Blog
+theme: ["PaperMod"]
+
+defaultTheme: dark
+paginate: 5
+params:
+    disableThemeToggle: true
+    disableAnchoredHeadings: true
+    profileMode:
+        enabled: false
+    homeInfoParams:
+        enabled: false
+    ShowBreadCrumbs: true
+
+menu:
+  main:
+    - name: Home
+      pageRef: /
+      weight: 5
+    - name: Blog
+      url: /posts
+      weight: 10
+    - name: Contact
+      url: /contact
+      weight: 15
+    - name: GitHub
+      url: https://github.com/YaxyZ
+      weight: 20
+      params:
+        external: true
+        

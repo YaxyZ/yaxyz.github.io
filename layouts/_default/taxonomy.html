@@ -1,0 +1,47 @@
+{{- define "main" }}
+<div class="blog-container-wide">
+    <article class="blog-header-section">
+        <header class="entry-header">
+            <h1 class="header-title">Filter: {{ .Title }}</h1>
+        </header>
+    </article>
+
+    <div class="posts-stream">
+        {{- $paginator := .Paginate .Pages 10 }}
+        {{- range $paginator.Pages }}
+        <article class="stream-item">
+            <div class="item-main-content">
+                <h2 class="item-title">{{ .Title }}</h2>
+                <p class="item-desc">{{ .Description | default .Summary | plainify | truncate 160 }}</p>
+            </div>
+            
+            <div class="item-footer">
+                {{- if .Params.tags }}
+                <ul class="item-tags">
+                    {{- range .Params.tags }}
+                    <li><a href="{{ "tags/" | absURL }}{{ . | urlize }}">#{{ . }}</a></li>
+                    {{- end }}
+                </ul>
+                {{- end }}
+                <span class="item-date">{{ .Date.Format "Jan 02, 2006" }}</span>
+            </div>
+            
+            <a class="item-link" href="{{ .Permalink }}"></a>
+        </article>
+        {{- end }}
+    </div>
+
+    {{- if gt $paginator.TotalPages 1 }}
+    <footer class="page-footer">
+        <nav class="pagination-nav">
+            <div class="nav-side">
+                {{- if $paginator.HasPrev }}<a class="nav-link" href="{{ $paginator.Prev.URL }}">PREVIOUS</a>{{- end }}
+            </div>
+            <div class="nav-side">
+                {{- if $paginator.HasNext }}<a class="nav-link" href="{{ $paginator.Next.URL }}">NEXT</a>{{- end }}
+            </div>
+        </nav>
+    </footer>
+    {{- end }}
+</div>
+{{- end }}

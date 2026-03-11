@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Test3 on YaxyZ&#39;s Blog</title>
+    <link>http://localhost:1313/tags/test3/</link>
+    <description>Recent content in Test3 on YaxyZ&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 11 Mar 2024 13:17:00 +0530</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/test3/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About this Blog</title>
+      <link>http://localhost:1313/posts/first---copy/</link>
+      <pubDate>Mon, 11 Mar 2024 13:17:00 +0530</pubDate>
+      <guid>http://localhost:1313/posts/first---copy/</guid>
+      <description>A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign.</description>
+    </item>
+  </channel>
+</rss>

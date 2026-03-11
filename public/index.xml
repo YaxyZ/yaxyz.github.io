@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Welcome on YaxyZ&#39;s Blog</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content in Welcome on YaxyZ&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 11 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The &#39;Red Alert&#39; Urgent Phishing Campaign: Analysis of an Iranian-Linked Android Infostealer</title>
+      <link>http://localhost:1313/posts/the-red-alert-urgent-phishing-campaign_-analysis-of-an-iranian-linked-android-infostealer/</link>
+      <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/the-red-alert-urgent-phishing-campaign_-analysis-of-an-iranian-linked-android-infostealer/</guid>
+      <description>A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign. CHANGE THIS LATER</description>
+    </item>
+    <item>
+      <title>About this Blog</title>
+      <link>http://localhost:1313/posts/first---copy-2/</link>
+      <pubDate>Mon, 11 Mar 2024 13:17:00 +0530</pubDate>
+      <guid>http://localhost:1313/posts/first---copy-2/</guid>
+      <description>A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign.</description>
+    </item>
+    <item>
+      <title>About this Blog</title>
+      <link>http://localhost:1313/posts/first---copy-4/</link>
+      <pubDate>Mon, 11 Mar 2024 13:17:00 +0530</pubDate>
+      <guid>http://localhost:1313/posts/first---copy-4/</guid>
+      <description>A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign.</description>
+    </item>
+    <item>
+      <title>About this Blog</title>
+      <link>http://localhost:1313/posts/first---copy/</link>
+      <pubDate>Mon, 11 Mar 2024 13:17:00 +0530</pubDate>
+      <guid>http://localhost:1313/posts/first---copy/</guid>
+      <description>A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign.</description>
+    </item>
+    <item>
+      <title>About this Blog</title>
+      <link>http://localhost:1313/posts/test2/</link>
+      <pubDate>Mon, 11 Mar 2024 13:17:00 +0530</pubDate>
+      <guid>http://localhost:1313/posts/test2/</guid>
+      <description>A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign.</description>
+    </item>
+    <item>
+      <title>Example article 1: the return of the null</title>
+      <link>http://localhost:1313/posts/first/</link>
+      <pubDate>Mon, 11 Mar 2024 13:17:00 +0530</pubDate>
+      <guid>http://localhost:1313/posts/first/</guid>
+      <description>A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign.</description>
+    </item>
+    <item>
+      <title>Contact Me</title>
+      <link>http://localhost:1313/contact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/contact/</guid>
+      <description>&lt;p&gt;Feel free to reach out in one of these ways:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;LinkedIn&lt;/strong&gt;: &lt;a href=&#34;https://il.linkedin.com/in/yarinleibovich&#34;&gt;Profile&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Email&lt;/strong&gt;: &lt;a href=&#34;mailto:yaxyz@yourdomain.com&#34;&gt;yaxyz@yourdomain.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GitHub&lt;/strong&gt;: &lt;a href=&#34;https://github.com/YaxyZ&#34;&gt;github.com/YaxyZ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+  </channel>
+</rss>
