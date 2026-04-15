@@ -6,8 +6,45 @@
     <description>Recent content in Posts on YaxyZ&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 11 Mar 2026 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 15 Apr 2026 19:43:22 +0300</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Salvador Stealer Analysis</title>
+      <link>http://localhost:1313/posts/salvador-stealer-analysis/</link>
+      <pubDate>Wed, 15 Apr 2026 19:43:22 +0300</pubDate>
+      <guid>http://localhost:1313/posts/salvador-stealer-analysis/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/image3.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Android Malware analysis&lt;/p&gt;
+&lt;h1 id=&#34;salvador-stealer---android-malware-analysis&#34;&gt;Salvador Stealer - Android malware analysis&lt;/h1&gt;
+&lt;h3 id=&#34;by-yaxyz&#34;&gt;By YaxyZ&lt;/h3&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/image12.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/image4.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;sample-information&#34;&gt;Sample information&lt;/h1&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;Indicator&lt;/th&gt;
+          &lt;th&gt;Value&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Filename&lt;/td&gt;
+          &lt;td&gt;Malware_SalvidorStealer_INDUSLND_BANK_E_KYC.apk&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;SHA256&lt;/td&gt;
+          &lt;td&gt;21504d3f2f3c8d8d231575ca25b4e7e0871ad36ca6bbb825bf7f12bfc3b00f5a&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;Package Name&lt;/td&gt;
+          &lt;td&gt;com.indusvalley.appinstall&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id=&#34;overview&#34;&gt;Overview&lt;/h1&gt;
+&lt;p&gt;The Salvador infostealer is an Android malware designed to intercept Indian banking credentials and OTP Tokens by hooking into the device web rendering engine. It utilizes modern Android APIs to remain persistent even when the user attempts to close the application. Additionally, it implements a custom SMS Broadcast receiver to catch live OTP tokens received by SMS which is then used by the malicious actor to impersonate the user.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>The &#39;Red Alert&#39; Urgent Phishing Campaign: Analysis of an Iranian-Linked Android Infostealer</title>
       <link>http://localhost:1313/posts/the-red-alert-urgent-phishing-campaign_-analysis-of-an-iranian-linked-android-infostealer/</link>

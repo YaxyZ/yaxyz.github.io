@@ -1,0 +1,4 @@
+/* Center all images and their accompanying captions in the project */
+.post-content p:has(img) {
+    text-align: center;
+}
