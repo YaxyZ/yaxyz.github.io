@@ -6,16 +6,25 @@
     --header-height: 60px;
     --footer-height: 60px;
     --radius: 8px;
-    --theme: rgb(255, 255, 255);
-    --entry: rgb(255, 255, 255);
-    --primary: rgb(30, 30, 30);
-    --secondary: rgb(108, 108, 108);
-    --tertiary: rgb(214, 214, 214);
-    --content: rgb(31, 31, 31);
-    --code-block-bg: rgb(28, 29, 33);
-    --code-bg: rgb(245, 245, 245);
-    --border: rgb(238, 238, 238);
-    color-scheme: light;
+    /* Main background: Deep abyss, nearly black but with a cool tint */
+    --theme: rgb(10, 10, 15);
+    /* Article/Card background: Subtle elevation to separate from the void */
+    --entry: rgb(18, 19, 28);
+    /* Headings & Important text: Sharp, bright ice-white for high contrast */
+    --primary: rgb(230, 235, 245);
+    /* Metadata & Muted text: Medium steel-blue */
+    --secondary: rgb(120, 130, 160);
+    /* Hover states & Subtle UI elements */
+    --tertiary: rgb(40, 45, 65);
+    /* Main paragraph text: Crisp, legible light slate */
+    --content: rgb(180, 190, 210);
+    /* Code blocks: Pitch black/midnight for maximum syntax highlighting impact */
+    --code-block-bg: rgb(5, 5, 8);
+    /* Inline code: Distinctly lighter backing so it stands out in paragraphs */
+    --code-bg: rgb(30, 32, 45);
+    /* Borders and dividers: Sharp, defining edges */
+    --border: rgb(40, 45, 60);
+    color-scheme: dark;
 }
 
 :root[data-theme="dark"] {

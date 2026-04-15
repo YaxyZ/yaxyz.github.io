@@ -53,6 +53,11 @@
         justify-content: center;
     }
 
+    .header {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
     .header-title {
         margin-top: 2rem; /* Extra space for the 'Posts' title on small screens */
     }

@@ -3,6 +3,7 @@
 /* Add smooth spacing between items since borders are gone */
 #menu {
     gap: 24px; 
+    flex-wrap: wrap;
 }
 
 /* Strip all borders and backgrounds from the anchor tag */
