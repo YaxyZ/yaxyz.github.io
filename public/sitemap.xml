@@ -2,23 +2,29 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2026-04-15T19:43:22+03:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/salvador-stealer-analysis/</loc>
-    <lastmod>2026-04-15T19:43:22+03:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2026-04-15T19:43:22+03:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/tags/android/</loc>
-    <lastmod>2026-03-11T00:00:00+00:00</lastmod>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/infostealer/</loc>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/malware-analysis/</loc>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/reversing/</loc>
-    <lastmod>2026-03-11T00:00:00+00:00</lastmod>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/salvador-stealer-analysis/</loc>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2026-03-11T00:00:00+00:00</lastmod>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2026-04-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/test2/</loc>
     <lastmod>2026-03-11T00:00:00+00:00</lastmod>
