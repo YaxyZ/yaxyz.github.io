@@ -1,8 +1,9 @@
 ---
 title: "Salvador Stealer Analysis"
+description: "The Salvador infostealer is an Android malware designed to intercept Indian banking credentials and OTP Tokens by hooking into the device web rendering engine."
 date: "2026-04-15"
 draft: false
-tags: ["infostealer", "android", "reversing","malware analysis"]
+tags: ["infostealer", "android", "reversing","malware analysis","report"]
 ---
 
 ![](/images/image3.png)

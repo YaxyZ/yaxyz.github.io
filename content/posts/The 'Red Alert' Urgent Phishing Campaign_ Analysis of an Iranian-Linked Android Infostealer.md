@@ -1,8 +1,8 @@
 ---
 title: "The 'Red Alert' Urgent Phishing Campaign: Analysis of an Iranian-Linked Android Infostealer"
-description: "A deep dive into the manifest and decompiled Java code of a recent credential harvesting campaign. CHANGE THIS LATER"
+description: "This article reveals the static analysis of a malicious android app pretending to be 'Red Alert', an Israeli open source early missile warning app. The trojanized application acts as an infostealer, utilizing wrappers, java reflection, and string obfuscation to hide its core functionality."
 date: 2026-03-11
-tags: ["test2", "android", "reversing"]
+tags: ["android", "reversing", "APT", "infostealer", "malware analysis","report"]
 draft: false
 ---
 
