@@ -6,7 +6,7 @@ tags: ["android", "reversing", "APT", "AI", "malware analysis","report"]
 draft: false
 ---
 ## By Yarin Leibovich
-![](/images/promptspy/image0)
+![](/images/promptspy/image_0.png)
 # Introduction
 Not so long ago, *TheHackerNews* released an article regarding a new Trojan circulating in the Android world, that make use of AI as part of its malicious operations on the infected device. It was enough to light up my curiosity and make me jump right into analyzing it.
 
@@ -33,17 +33,17 @@ At first I began investigating the malware from the Second stage payload, but de
 
 In short, the dropper asks for user permission to install an additional package for an investment app. Afterwards it obtains the second stage payload from an external URL:
 
-![](/images/promptspy/image1)
+![](/images/promptspy/image_1.png)
 
 Once the installation is finished, the malware dropper verifies:
 - Whether the app is installed correctly by checking its state via Boolean values
 - Whether the VNC service is running properly.
 
-![](/images/promptspy/image2)
+![](/images/promptspy/image_2.png)
 
 Following the listener onClick implementation revealed the jackpot, the MainService triggers:
 
-![](/images/promptspy/image3)
+![](/images/promptspy/image_3.png)
 
 As seen in the image, the malware prepares an `Intent` containing all necessary initialization data such as host IP, ports, and access keys extracted from a `Constants` class.
 
@@ -72,7 +72,7 @@ A high level overview of the onCreate method reveals some significant steps the 
 3. A dedicated WIFI State `BroadcastReceiver` is registered with its designated intent filter.
 4. Audit logs are sent to the attacker server.
 
-![](/images/promptspy/image4)
+![](/images/promptspy/image_4.png)
 
 *But Yarin, so far there is no AI involved. How so?*
 Lets dive into the interesting part.
@@ -83,7 +83,7 @@ So far we have discussed the MainActivity. Lets analyze the MainService, which p
 If we take a look at the service lifecycle below, the first method called right after this service is instantiated is `onCreate()`:
 
 
-![](/images/promptspy/image5)
+![](/images/promptspy/image_5.png)
 Analysis of the MainService `onCreate()` method reveals that the first step is to take a use of the Android WakeLock mechanisem.
 
 <u>What is the WakeLock mechanism in Android?</u>
@@ -107,7 +107,7 @@ If the permission is not granted, the malware would keep redirecting the user to
 
 In parallel, inside MainActivity, something interesting is happening: If the user has approved the accessibility permission, it starts some sort of an automation:
 
-![](/images/promptspy/image6)
+![](/images/promptspy/image_6.png)
 
 Now we get to the **real deal**. The malware utilizes a very interesting persistence mechanism - It combines both Android Accessibility Services with LLM logic to achieve this.
 
@@ -116,7 +116,7 @@ Now we get to the **real deal**. The malware utilizes a very interesting persist
 <u>The goal</u>
 The main goal is to lock the app in the recent apps with the *"keep open"* or *"lock"* buttons. This would "protect" the malware from background optimization and make sure that the malware would keep running at all cost - even after reboots. 
 
-![](/images/promptspy/image7)
+![](/images/promptspy/image_7.png)
 
 <u>The challenge</u>
 Each android distro has its own screen size, buttons text, UI components layout, making it almost impossible to hardcode this action. By leveraging the current device information and screen content via API calls, the malware uses the power of AI to determine the required actions dynamically.
@@ -133,7 +133,7 @@ You are an Android automation assistant. The user will give you the UI XML data 
 3. The prompt is sent using the Gemini hardcoded API key, and the returned JSON response is parsed.
 4. Using the Accessibility Services, the malware mimics user gestures based on the AI responses:
 
-![](/images/promptspy/image8)
+![](/images/promptspy/image_8.png)
 
 6. After the malware finish executing the input, a new XML snapshot of the screen is taken and sent back to the Gemini with the following prompt:
 
