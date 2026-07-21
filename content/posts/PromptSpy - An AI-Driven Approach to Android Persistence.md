@@ -5,6 +5,7 @@ date: 2026-07-21
 tags: ["android", "reversing", "APT", "AI", "malware analysis","report"]
 draft: false
 ---
+## By Yarin Leibovich
 ![](/images/promptspy/image0)
 # Introduction
 Not so long ago, *TheHackerNews* released an article regarding a new Trojan circulating in the Android world, that make use of AI as part of its malicious operations on the infected device. It was enough to light up my curiosity and make me jump right into analyzing it.
