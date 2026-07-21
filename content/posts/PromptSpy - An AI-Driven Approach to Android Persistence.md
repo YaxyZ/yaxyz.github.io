@@ -1,11 +1,11 @@
 ---
 title: "PromptSpy: An AI-Driven Approach to Android Persistence"
-description: "Recently, there has been a rising trend in modern Android malware which include SOCKS5 proxy capabilities. In this article I try to deep dive into the world of SOCKS5 proxy and investigate a recent, real world case of such functionality."
+description: "In this article, I deep dive into a real-world sample that combines Accessibility Services with Gemini AI to dynamically navigate system UI controls and enforce persistence on infected devices."
 date: 2026-07-21
 tags: ["android", "reversing", "APT", "AI", "malware analysis","report"]
 draft: false
 ---
-
+![](/images/promptspy/image0)
 # Introduction
 Not so long ago, *TheHackerNews* released an article regarding a new Trojan circulating in the Android world, that make use of AI as part of its malicious operations on the infected device. It was enough to light up my curiosity and make me jump right into analyzing it.
 
@@ -32,17 +32,17 @@ At first I began investigating the malware from the Second stage payload, but de
 
 In short, the dropper asks for user permission to install an additional package for an investment app. Afterwards it obtains the second stage payload from an external URL:
 
-![[Pasted image 20260715213719.png]]
+![](/images/promptspy/image1)
 
 Once the installation is finished, the malware dropper verifies:
 - Whether the app is installed correctly by checking its state via Boolean values
 - Whether the VNC service is running properly.
 
-![[Pasted image 20260721193035.png]]
+![](/images/promptspy/image2)
 
 Following the listener onClick implementation revealed the jackpot, the MainService triggers:
 
-![[Pasted image 20260721193212.png]]
+![](/images/promptspy/image3)
 
 As seen in the image, the malware prepares an `Intent` containing all necessary initialization data such as host IP, ports, and access keys extracted from a `Constants` class.
 
@@ -71,7 +71,7 @@ A high level overview of the onCreate method reveals some significant steps the 
 3. A dedicated WIFI State `BroadcastReceiver` is registered with its designated intent filter.
 4. Audit logs are sent to the attacker server.
 
-![[Pasted image 20260711202331.png]]
+![](/images/promptspy/image4)
 
 *But Yarin, so far there is no AI involved. How so?*
 Lets dive into the interesting part.
@@ -82,7 +82,7 @@ So far we have discussed the MainActivity. Lets analyze the MainService, which p
 If we take a look at the service lifecycle below, the first method called right after this service is instantiated is `onCreate()`:
 
 
-![[Pasted image 20260711202834.png]]
+![](/images/promptspy/image5)
 Analysis of the MainService `onCreate()` method reveals that the first step is to take a use of the Android WakeLock mechanisem.
 
 <u>What is the WakeLock mechanism in Android?</u>
@@ -106,7 +106,7 @@ If the permission is not granted, the malware would keep redirecting the user to
 
 In parallel, inside MainActivity, something interesting is happening: If the user has approved the accessibility permission, it starts some sort of an automation:
 
-![[Pasted image 20260718134409.png]]
+![](/images/promptspy/image6)
 
 Now we get to the **real deal**. The malware utilizes a very interesting persistence mechanism - It combines both Android Accessibility Services with LLM logic to achieve this.
 
@@ -115,7 +115,7 @@ Now we get to the **real deal**. The malware utilizes a very interesting persist
 <u>The goal</u>
 The main goal is to lock the app in the recent apps with the *"keep open"* or *"lock"* buttons. This would "protect" the malware from background optimization and make sure that the malware would keep running at all cost - even after reboots. 
 
-![[Pasted image 20260721195637.png]]
+![](/images/promptspy/image7)
 
 <u>The challenge</u>
 Each android distro has its own screen size, buttons text, UI components layout, making it almost impossible to hardcode this action. By leveraging the current device information and screen content via API calls, the malware uses the power of AI to determine the required actions dynamically.
@@ -132,7 +132,7 @@ You are an Android automation assistant. The user will give you the UI XML data 
 3. The prompt is sent using the Gemini hardcoded API key, and the returned JSON response is parsed.
 4. Using the Accessibility Services, the malware mimics user gestures based on the AI responses:
 
-![[Pasted image 20260718184604.png]]
+![](/images/promptspy/image8)
 
 6. After the malware finish executing the input, a new XML snapshot of the screen is taken and sent back to the Gemini with the following prompt:
 
