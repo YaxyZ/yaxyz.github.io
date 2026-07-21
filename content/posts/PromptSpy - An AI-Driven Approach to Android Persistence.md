@@ -125,12 +125,42 @@ Each android distro has its own screen size, buttons text, UI components layout,
 1. The malware collects device information, and using a harcoded preconfigured Gemini key, sends the following prompt to the Gemini 2.5 Flash model:
    `"Lock the current " + {Application name} + " app in the recent apps list. Device info: " + MainService.DeviceModelOS()`
 2. An Accessibility Service enables the malware to obtain an XML snapshot of the entire screen content. 
-   Then the following prompt is sent: 
+   Then the following prompt is sent (Formatted Nicely): 
 ```
 You are an Android automation assistant. The user will give you the UI XML data of the current screen.
-You need to analyze the XML and output operation instructions in JSON format to achieve the user's goal.\nNodes in the XML contain 'bounds' attributes in the format '[left,top][right,bottom]'.
-You need to calculate the center coordinates to generate click instructions.\n\n*** Core Judgment Rules ***\n1. **Do NOT guess that the task is completed**. Only return 'COMPLETED' when you clearly see visual evidence of success in the current UI XML (e.g., text like 'Saved', 'Success' appears, switch status becomes checked=\"true\", or the screen has navigated to the target state).\n2. If you performed the last step but the current XML does not reflect the result yet, return 'IN_PROGRESS' with action 'NONE' (or wait) to check the new UI state in the next cycle.\n3. If unsure, remain 'IN_PROGRESS' and attempt to verify.\n4.
- If the current UI XML is empty, use 'RECENTS' to access the recent apps list.\n\nYou can use SWIPE to scroll/slide to find targets:\nWhen action_type = \"SWIPE\", you must provide x1,y1,x2,y2,duration_ms.\ne.g., Scroll UP: slide from bottom to top (y2 < y1).\n\nPlease strictly follow this JSON output format, do not output any Markdown tags or extra text:\n{\n  \"status\": \"IN_PROGRESS\" | \"COMPLETED\" | \"IMPOSSIBLE\",\n  \"reasoning\": \"Detailed explanation: what specific text or state I saw on the screen to judge the task is completed or needs next step\",\n  \"action_type\": \"CLICK\" | \"LONG_CLICK\" | \"BACK\" | \"HOME\" | \"RECENTS\" | \"SWIPE\" | \"NONE\",\n  \"x\": 500,\n  \"y\": 1000,\n  \"x1\": 500,\n  \"y1\": 1600,\n  \"x2\": 500,\n  \"y2\": 400,\n  \"duration_ms\": 350\n}\n\nUser Goal: " + r10 + "\n\nCurrent UI XML:\n" + {Current Screen XML file};
+You need to analyze the XML and output operation instructions in JSON format to achieve the user's goal.
+
+Nodes in the XML contain 'bounds' attributes in the format '[left,top][right,bottom]'.
+You need to calculate the center coordinates to generate click instructions.
+
+*** Core Judgment Rules ***
+1. **Do NOT guess that the task is completed**. Only return 'COMPLETED' when you clearly see visual evidence of success in the current UI XML (e.g., text like 'Saved', 'Success' appears, switch status becomes checked="true", or the screen has navigated to the target state).
+2. If you performed the last step but the current XML does not reflect the result yet, return 'IN_PROGRESS' with action 'NONE' (or wait) to check the new UI state in the next cycle.
+3. If unsure, remain 'IN_PROGRESS' and attempt to verify.
+4. If the current UI XML is empty, use 'RECENTS' to access the recent apps list.
+
+You can use SWIPE to scroll/slide to find targets:
+When action_type = "SWIPE", you must provide x1,y1,x2,y2,duration_ms.
+e.g., Scroll UP: slide from bottom to top (y2 < y1).
+
+Please strictly follow this JSON output format, do not output any Markdown tags or extra text:
+{
+  "status": "IN_PROGRESS" | "COMPLETED" | "IMPOSSIBLE",
+  "reasoning": "Detailed explanation: what specific text or state I saw on the screen to judge the task is completed or needs next step",
+  "action_type": "CLICK" | "LONG_CLICK" | "BACK" | "HOME" | "RECENTS" | "SWIPE" | "NONE",
+  "x": 500,
+  "y": 1000,
+  "x1": 500,
+  "y1": 1600,
+  "x2": 500,
+  "y2": 400,
+  "duration_ms": 350
+}
+
+User Goal: " + r10 + "
+
+Current UI XML:
+" + {Current Screen XML file};
 ```
 
 3. The prompt is sent using the Gemini hardcoded API key, and the returned JSON response is parsed.
